@@ -1,0 +1,11 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\MyPlaywrightProject",
+    "\\MyPlaywrightProject\\Test Cases",
+    "\\pages",
+    "\\tests"
+  ],
+  "SelectedNode": "\\tests\\test_login_polymorphism.py",
+  "PreviewInSolutionExplorer": false
+}
