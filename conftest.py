@@ -1,5 +1,5 @@
 import pytest
-from playwright.async_api import Page, Browser, BrowserContext
+from playwright.async_api import async_playwright, Page, Browser, BrowserContext
 from pages.admin_login_page import AdminLoginPage
 from pages.client_login_page import ClientLoginPage
 from pages.home_page import HomePage
@@ -15,15 +15,15 @@ load_dotenv()
 @pytest.fixture(scope="session")
 def base_url() -> str:
     """Fixture providing the base URL for the application."""
-    return os.getenv("BASE_URL", "https://example.com")
+    return os.getenv("BASE_URL", "https://opensource-demo.orangehrmlive.com")
 
 
 @pytest.fixture(scope="session")
 def admin_credentials() -> dict:
-    """Fixture providing admin credentials."""
+    """Fixture providing OrangeHRM admin credentials."""
     return {
-        "username": os.getenv("ADMIN_USERNAME", "admin@example.com"),
-        "password": os.getenv("ADMIN_PASSWORD", "admin123")
+        "username": os.getenv("ORANGE_USERNAME", "Admin"),
+        "password": os.getenv("ORANGE_PASSWORD", "admin123")
     }
 
 
@@ -37,25 +37,37 @@ def client_credentials() -> dict:
 
 
 @pytest.fixture
-async def admin_login_page(page: Page, base_url: str) -> AdminLoginPage:
+async def async_page():
+    """Async browser page fixture that replaces pytest-playwright's sync page."""
+    async with async_playwright() as pw:
+        browser = await pw.chromium.launch(headless=False, slow_mo=500)
+        context = await browser.new_context()
+        page = await context.new_page()
+        yield page
+        await context.close()
+        await browser.close()
+
+
+@pytest.fixture
+async def admin_login_page(async_page: Page, base_url: str) -> AdminLoginPage:
     """Fixture providing an initialized AdminLoginPage instance."""
-    admin_page = AdminLoginPage(page, base_url)
+    admin_page = AdminLoginPage(async_page, base_url)
     await admin_page.navigate()
     return admin_page
 
 
 @pytest.fixture
-async def client_login_page(page: Page, base_url: str) -> ClientLoginPage:
+async def client_login_page(async_page: Page, base_url: str) -> ClientLoginPage:
     """Fixture providing an initialized ClientLoginPage instance."""
-    client_page = ClientLoginPage(page, base_url)
+    client_page = ClientLoginPage(async_page, base_url)
     await client_page.navigate()
     return client_page
 
 
 @pytest.fixture
-async def home_page(page: Page, base_url: str) -> HomePage:
+async def home_page(async_page: Page, base_url: str) -> HomePage:
     """Fixture providing an initialized HomePage instance."""
-    return HomePage(page, base_url)
+    return HomePage(async_page, base_url)
 
 
 @pytest.fixture
