@@ -5,6 +5,7 @@ from pages.client_login_page import ClientLoginPage
 from pages.home_page import HomePage
 from pages.checkout_page import CheckoutPage
 from pages.dashboard_page import DashboardPage
+from pages.system_users_page import SystemUsersPage
 # from pages.saucedemo_login_page import SauceDemoLoginPage  # Temporarily disabled
 from dotenv import load_dotenv
 import os
@@ -40,8 +41,8 @@ def client_credentials() -> dict:
 async def async_page():
     """Async browser page fixture that replaces pytest-playwright's sync page."""
     async with async_playwright() as pw:
-        browser = await pw.chromium.launch(headless=False, slow_mo=500)
-        context = await browser.new_context()
+        browser = await pw.chromium.launch(headless=False, slow_mo=500, args=['--start-maximized'])
+        context = await browser.new_context(no_viewport=True)
         page = await context.new_page()
         yield page
         await context.close()
@@ -83,6 +84,12 @@ async def dashboard_page(page: Page, base_url: str) -> DashboardPage:
 
 
 @pytest.fixture
+async def system_users_page(async_page: Page, base_url: str) -> SystemUsersPage:
+    """Fixture providing an initialized SystemUsersPage instance."""
+    return SystemUsersPage(async_page, base_url)
+
+
+@pytest.fixture
 async def logged_in_admin(admin_login_page: AdminLoginPage, admin_credentials: dict) -> AdminLoginPage:
     """Fixture that provides a page with admin already logged in."""
     await admin_login_page.login(admin_credentials["username"], admin_credentials["password"])
@@ -96,6 +103,15 @@ async def logged_in_client(client_login_page: ClientLoginPage, client_credential
     await client_login_page.login(client_credentials["username"], client_credentials["password"])
     await client_login_page.wait_for_page_load()
     return client_login_page
+
+
+@pytest.fixture
+async def logged_in_system_users(logged_in_admin: AdminLoginPage) -> SystemUsersPage:
+    """Fixture that provides System Users page with admin already logged in."""
+    # Create SystemUsersPage using the same page instance from logged_in_admin
+    system_users_page = SystemUsersPage(logged_in_admin.page, logged_in_admin._base_url)
+    await system_users_page.navigate()
+    return system_users_page
 
 
 @pytest.fixture(scope="session")

@@ -1,6 +1,7 @@
 from playwright.async_api import Page, expect
 from abc import ABC, abstractmethod
 import os
+import re
 
 
 class BasePage(ABC):
@@ -79,11 +80,13 @@ class BasePage(ABC):
     
     async def assert_url_contains(self, expected_url_part: str) -> None:
         """Assertion: Validate URL contains expected text."""
-        await expect(self._page).to_have_url(lambda url: expected_url_part in url, timeout=self._timeout)
+        pattern = re.compile(f".*{re.escape(expected_url_part)}.*")
+        await expect(self._page).to_have_url(pattern, timeout=self._timeout)
     
     async def assert_title_contains(self, expected_title: str) -> None:
         """Assertion: Validate page title contains expected text."""
-        await expect(self._page).to_have_title(lambda title: expected_title in title, timeout=self._timeout)
+        pattern = re.compile(f".*{re.escape(expected_title)}.*")
+        await expect(self._page).to_have_title(pattern, timeout=self._timeout)
     
     async def assert_element_visible(self, selector: str) -> None:
         """Assertion: Validate element is visible."""
