@@ -13,9 +13,13 @@ class SystemUsersPage(BasePage):
     # Encapsulation: Private selectors for System Users page
     _PAGE_HEADING = "h6:has-text('User Management')"
     _ADD_BUTTON = ".orangehrm-header-container button"
-    _SEARCH_USERNAME_INPUT = "input[placeholder*='Username'], input.oxd-input"
-    _SEARCH_BUTTON = "button[type='submit']"
-    _RESET_BUTTON = "button:has-text('Reset'), button.oxd-button--ghost"
+    _FILTER_AREA = ".oxd-table-filter-area"
+    _FILTER_TOGGLE_BUTTON = ".oxd-table-filter-header-options button"
+    # Scoped to the filter form so it can't match the sidebar search box or the
+    # Employee Name autocomplete input (neither has the "oxd-input" class here).
+    _SEARCH_USERNAME_INPUT = f"{_FILTER_AREA} input.oxd-input"
+    _SEARCH_BUTTON = f"{_FILTER_AREA} button[type='submit']"
+    _RESET_BUTTON = f"{_FILTER_AREA} button:has-text('Reset')"
     
     # Dropdown selectors
     _USER_ROLE_DROPDOWN = "div.oxd-select-text:near(label:has-text('User Role'))"
@@ -48,8 +52,15 @@ class SystemUsersPage(BasePage):
         await self.click_element(self._ADD_BUTTON)
         await self.wait_for_page_load()
 
+    async def ensure_filter_area_expanded(self) -> None:
+        """Expand the search filter panel if it's currently collapsed."""
+        if not await self.is_visible(self._FILTER_AREA):
+            await self.click_element(self._FILTER_TOGGLE_BUTTON)
+            await self.wait_for_selector(self._FILTER_AREA)
+
     async def search_by_username(self, username: str) -> None:
         """Search for a user by username."""
+        await self.ensure_filter_area_expanded()
         await self.fill_input(self._SEARCH_USERNAME_INPUT, username)
         await self.click_element(self._SEARCH_BUTTON)
         await self.wait_for_page_load()
@@ -121,5 +132,12 @@ class SystemUsersPage(BasePage):
 
     async def assert_specific_user_visible(self, username: str) -> None:
         """Assertion: Validate specific username appears in the table."""
-        # Look for username in table rows, not just anywhere
-        await self.assert_element_visible(f".oxd-table-card:has-text('{username}')")
+        # Match on the Username column (2nd cell) specifically, since the
+        # "User Role" column can also contain values like "Admin" and would
+        # otherwise match unrelated rows via a plain has-text row search.
+        selector = (
+            f"{self._RECORDS_TABLE} .oxd-table-row:has("
+            "> div.oxd-table-cell:nth-child(2) "
+            f"div:text-is('{username}'))"
+        )
+        await self.assert_element_visible(selector)
