@@ -16,6 +16,7 @@ class TestLoginOrangeHRM:
             admin_credentials["password"]
         )
         await admin_login_page.assert_dashboard_visible()
+        await admin_login_page.page.pause()  # opens Playwright Inspector; click "Resume" to continue
 
     @pytest.mark.regression
     async def test_login_invalid_username(self, admin_login_page: AdminLoginPage,
