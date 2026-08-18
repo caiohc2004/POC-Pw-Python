@@ -24,7 +24,8 @@ class TestLoginOrangeHRM:
         """Test login with wrong username shows error message."""
         await admin_login_page.login("wrongusername", admin_credentials["password"])
         await admin_login_page.assert_invalid_credentials_visible()
-
+        await admin_login_page.page.pause() 
+        
     @pytest.mark.regression
     async def test_login_invalid_password(self, admin_login_page: AdminLoginPage,
                                           admin_credentials: dict):
