@@ -1,3 +1,4 @@
+import os
 import pytest
 from pages.admin_login_page import AdminLoginPage
 
@@ -16,7 +17,8 @@ class TestLoginOrangeHRM:
             admin_credentials["password"]
         )
         await admin_login_page.assert_dashboard_visible()
-        await admin_login_page.page.pause()  # opens Playwright Inspector; click "Resume" to continue
+        if not os.getenv("CI"):
+            await admin_login_page.page.pause()  # opens Playwright Inspector; click "Resume" to continue
 
     @pytest.mark.regression
     async def test_login_invalid_username(self, admin_login_page: AdminLoginPage,
@@ -24,8 +26,9 @@ class TestLoginOrangeHRM:
         """Test login with wrong username shows error message."""
         await admin_login_page.login("wrongusername", admin_credentials["password"])
         await admin_login_page.assert_invalid_credentials_visible()
-        await admin_login_page.page.pause() 
-        
+        if not os.getenv("CI"):
+            await admin_login_page.page.pause()
+
     @pytest.mark.regression
     async def test_login_invalid_password(self, admin_login_page: AdminLoginPage,
                                           admin_credentials: dict):

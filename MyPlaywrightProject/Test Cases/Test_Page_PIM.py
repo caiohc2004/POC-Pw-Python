@@ -1,3 +1,4 @@
+import os
 import pytest
 from pages.admin_login_page import AdminLoginPage
 from pages.pim_page import PIMPage
@@ -24,7 +25,8 @@ class TestPIMOrangeHRM:
         pim_page = PIMPage(admin_login_page.page, base_url)
         await pim_page.navigate()
         await pim_page.assert_on_pim_page()
-        await admin_login_page.page.pause() 
+        if not os.getenv("CI"):
+            await admin_login_page.page.pause()
 
     @pytest.mark.smoke
     async def test_search_employee_by_name(
@@ -42,7 +44,8 @@ class TestPIMOrangeHRM:
 
         await pim_page.search_by_employee_name("a")
         await pim_page.assert_records_found()
-        await admin_login_page.page.pause() 
+        if not os.getenv("CI"):
+            await admin_login_page.page.pause()
 
     @pytest.mark.regression
     async def test_search_nonexistent_employee(
@@ -59,7 +62,8 @@ class TestPIMOrangeHRM:
         await pim_page.navigate()
         await pim_page.search_by_employee_name("ZZNonExistentEmployee99999")
         await pim_page.assert_no_records_found()
-        await admin_login_page.page.pause() 
+        if not os.getenv("CI"):
+            await admin_login_page.page.pause()
 
     @pytest.mark.regression
     async def test_add_employee_button_visible(
@@ -75,4 +79,5 @@ class TestPIMOrangeHRM:
         pim_page = PIMPage(admin_login_page.page, base_url)
         await pim_page.navigate()
         await pim_page.assert_add_button_visible()
-        await admin_login_page.page.pause() 
+        if not os.getenv("CI"):
+            await admin_login_page.page.pause() 

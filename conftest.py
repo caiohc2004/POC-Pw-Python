@@ -12,6 +12,9 @@ import os
 
 load_dotenv()
 
+# GitHub Actions (and most CI providers) set CI=true automatically.
+IS_CI = os.getenv("CI", "").lower() == "true"
+
 
 @pytest.fixture(scope="session")
 def base_url() -> str:
@@ -41,7 +44,11 @@ def client_credentials() -> dict:
 async def async_page():
     """Async browser page fixture that replaces pytest-playwright's sync page."""
     async with async_playwright() as pw:
-        browser = await pw.chromium.launch(headless=False, slow_mo=500, args=['--start-maximized'])
+        browser = await pw.chromium.launch(
+            headless=IS_CI,
+            slow_mo=0 if IS_CI else 500,
+            args=['--start-maximized']
+        )
         context = await browser.new_context(no_viewport=True)
         page = await context.new_page()
         yield page

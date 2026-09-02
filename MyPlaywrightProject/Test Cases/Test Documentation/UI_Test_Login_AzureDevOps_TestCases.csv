@@ -1,0 +1,20 @@
+ID,Work Item Type,Title,Test Step,Step Action,Step Expected,Area Path,Priority,State
+,Test Case,Login - Valid credentials navigate to Dashboard,1,Navigate to the OrangeHRM login page (/web/index.php/auth/login).,The login page is displayed with Username field Password field and Login button.,,1,Design
+,Test Case,Login - Valid credentials navigate to Dashboard,2,Enter a valid Username (e.g. Admin) in the Username field.,The username value is entered in the field.,,1,Design
+,Test Case,Login - Valid credentials navigate to Dashboard,3,Enter a valid Password (e.g. admin123) in the Password field.,The password value is entered and masked in the field.,,1,Design
+,Test Case,Login - Valid credentials navigate to Dashboard,4,Click the Login button.,The form is submitted and the page navigates away from the login page.,,1,Design
+,Test Case,Login - Valid credentials navigate to Dashboard,5,Observe the resulting page.,The Dashboard page is displayed with the "Dashboard" heading visible confirming a successful login.,,1,Design
+,Test Case,Login - Invalid username shows error message,1,Navigate to the OrangeHRM login page (/web/index.php/auth/login).,The login page is displayed with Username field Password field and Login button.,,2,Design
+,Test Case,Login - Invalid username shows error message,2,Enter a non-existent username (e.g. wrongusername) in the Username field.,The username value is entered in the field.,,2,Design
+,Test Case,Login - Invalid username shows error message,3,Enter a valid Password (e.g. admin123) in the Password field.,The password value is entered and masked in the field.,,2,Design
+,Test Case,Login - Invalid username shows error message,4,Click the Login button.,The form is submitted.,,2,Design
+,Test Case,Login - Invalid username shows error message,5,Observe the resulting page.,An "Invalid credentials" error message is displayed and the user remains on the login page.,,2,Design
+,Test Case,Login - Invalid password shows error message,1,Navigate to the OrangeHRM login page (/web/index.php/auth/login).,The login page is displayed with Username field Password field and Login button.,,2,Design
+,Test Case,Login - Invalid password shows error message,2,Enter a valid Username (e.g. Admin) in the Username field.,The username value is entered in the field.,,2,Design
+,Test Case,Login - Invalid password shows error message,3,Enter an incorrect password (e.g. wrongpassword) in the Password field.,The password value is entered and masked in the field.,,2,Design
+,Test Case,Login - Invalid password shows error message,4,Click the Login button.,The form is submitted.,,2,Design
+,Test Case,Login - Invalid password shows error message,5,Observe the resulting page.,An "Invalid credentials" error message is displayed and the user remains on the login page.,,2,Design
+,Test Case,Login - Empty fields show required field validation,1,Navigate to the OrangeHRM login page (/web/index.php/auth/login).,The login page is displayed with Username field Password field and Login button.,,2,Design
+,Test Case,Login - Empty fields show required field validation,2,Leave the Username and Password fields empty.,No values are entered in either field.,,2,Design
+,Test Case,Login - Empty fields show required field validation,3,Click the Login button without entering any data.,The form submission is blocked by client-side validation.,,2,Design
+,Test Case,Login - Empty fields show required field validation,4,Observe the Username and Password fields.,A "Required" validation message is displayed under both the Username and Password fields (at least 2 messages total).,,2,Design
